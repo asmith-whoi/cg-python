@@ -2,7 +2,7 @@ import imm
 from datetime import datetime
 import os
 
-import cg_util as cu
+import cgutil as cu
 #import cgserial as ser
 
 #port = ser.select_port_win()
