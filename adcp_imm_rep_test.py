@@ -7,13 +7,13 @@ def run_test(buoy_port, adcp_port):
 
     #Establish contact with virtual adcp...
     adcp_log = open(("adcp-%s.log" % datetime.today().strftime("%Y%m%d")), "wb")
-    adcp = ser.open_port(adcp_port, 9600, 3)
+    adcp = ser.open_port(adcp_port, 9600, 2)
     if not adcp:
         return "Error! Unable to connect to ADCP."
 
     # Establish contact with virtual buoy...
     buoy_log = open(("buoy-%s.log" % datetime.today().strftime("%Y%m%d")), "wb")
-    buoy = ser.open_port(buoy_port, 9600, 3)
+    buoy = ser.open_port(buoy_port, 9600, 2)
     if not buoy:
         return "Error! Unable to connect to Buoy."
 
@@ -28,13 +28,15 @@ def run_test(buoy_port, adcp_port):
 
     # START A LOOP HERE!
     #
+    i = 1
     test_in_progress = True
     while test_in_progress:
         ser.cmd_and_reply(adcp,adcp_log, "pwron")
         # Example ADCP data sample...
         print("Making a sample now...")
         ser.cmd_and_reply(adcp,adcp_log, "sampleadd")
-        ser.cmd_and_reply(adcp,adcp_log, """2016/01/29 21:26:12.97 00001
+        ser.cmd_and_reply(adcp,adcp_log, ("""sample no. #%s
+2016/01/29 21:26:12.97 00001
 Hdg: 352.3 Pitch: -1.2 Roll: -3.1
 Temp: 23.4 SoS: 1530 BIT: 00
 Bin    Dir    Mag     E/W     N/S    Vert     Err   Echo1  Echo2  Echo3  Echo4
@@ -67,7 +69,7 @@ Bin    Dir    Mag     E/W     N/S    Vert     Err   Echo1  Echo2  Echo3  Echo4
  27     --     --  -32768  -32768  -32768  -32768     69     68     72     69
  28     --     --  -32768  -32768  -32768  -32768     69     66     71     69
  29     --     --  -32768  -32768  -32768  -32768     68     68     71     69
- 30     --     --  -32768  -32768  -32768  -32768     69     67     72     69""")
+        30     --     --  -32768  -32768  -32768  -32768     69     67     72     69""" % i))
         ser.cmd_and_reply(adcp,adcp_log, "pwroff")
         print("Sampling complete, back to sleep...")
         # Wait a few seconds, then wake up the buoy...
