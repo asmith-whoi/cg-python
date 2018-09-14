@@ -6,13 +6,13 @@ def run_test(buoy_port, adcp_port):
     """Send samples to adcp. Get samples from buoy. Repeat"""
 
     #Establish contact with virtual adcp...
-    adcp_log = open(("adcp-%s.log" % datetime.today().strftime("%Y%m%d")), "w")
+    adcp_log = open(("adcp-%s.log" % datetime.today().strftime("%Y%m%d")), "wb")
     adcp = ser.open_port(adcp_port, 9600)
     if not adcp:
         return "Error! Unable to connect to ADCP."
 
     # Establish contact with virtual buoy...
-    buoy_log = open(("buoy-%s.log" % datetime.today().strftime("%Y%m%d")), "w")
+    buoy_log = open(("buoy-%s.log" % datetime.today().strftime("%Y%m%d")), "wb")
     buoy = ser.open_port(buoy_port, 9600)
     if not buoy:
         return "Error! Unable to connect to Buoy."

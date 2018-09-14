@@ -12,9 +12,9 @@ def select_port_win():
         ports = list_ports.comports()
         if len(ports) == 0:
             print("There don't seem to be any available serial ports.")
-            selection = raw_input("Would you like to connect a serial device and try again? [y]/n ")
+            selection = input("Would you like to connect a serial device and try again? [y]/n ")
             if selection != "n":
-                raw_input("Connect your device now, then press ENTER to continue...")
+                input("Connect your device now, then press ENTER to continue...")
             else:
                 return None
         else:
@@ -29,7 +29,7 @@ def select_port_win():
         # Input testing -- input has to be a number.
         while True:
             try:
-                selection = int(raw_input("Enter your selection: "))
+                selection = int(input("Enter your selection: "))
             except ValueError:
                 print("Whoa! That's not a number.")
                 continue
@@ -66,7 +66,7 @@ def cmd_and_reply(conn, capfile, cmd):
         str: the received message.
     """
     conn.reset_input_buffer()
-    conn.write(cmd.encode('ascii')+'\r\n')
+    conn.write(cmd.encode('ascii')+b'\r\n')
     cap = conn.read(conn.in_waiting)
     while True:
         prev = cap
