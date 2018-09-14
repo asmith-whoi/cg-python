@@ -1,5 +1,6 @@
 import cgserial as ser
 from datetime import datetime
+import time
 
 def run_test(buoy_port, adcp_port):
     """Send samples to adcp. Get samples from buoy. Repeat"""
@@ -26,6 +27,60 @@ def run_test(buoy_port, adcp_port):
 
     # START A LOOP HERE!
     #
+    test_in_progress = True
+    while test_in_progress:
+        ser.cmd_and_reply(adcp,adcp_log, "pwron")
+        # Example ADCP data sample...
+        ser.cmd_and_reply(adcp,adcp_log, "sampleadd")
+        ser.cmd_and_reply(adcp,adcp_log, """2016/01/29 21:26:12.97 00001
+Hdg: 352.3 Pitch: -1.2 Roll: -3.1
+Temp: 23.4 SoS: 1530 BIT: 00
+Bin    Dir    Mag     E/W     N/S    Vert     Err   Echo1  Echo2  Echo3  Echo4
+  1   88.3  104.0     104       3       0     103    111    109    103     99
+  2     --     --  -32768  -32768  -32768  -32768     72     72     88     89
+  3     --     --  -32768  -32768  -32768  -32768     69     68     74     73
+  4     --     --  -32768  -32768  -32768  -32768     69     67     72     70
+  5     --     --  -32768  -32768  -32768  -32768     69     66     71     70
+  6     --     --  -32768  -32768  -32768  -32768     69     67     71     69
+  7     --     --  -32768  -32768  -32768  -32768     69     67     71     69
+  8     --     --  -32768  -32768  -32768  -32768     69     67     71     69
+  9     --     --  -32768  -32768  -32768  -32768     69     67     71     69
+ 10     --     --  -32768  -32768  -32768  -32768     68     68     71     68
+ 11     --     --  -32768  -32768  -32768  -32768     68     67     72     69
+ 12     --     --  -32768  -32768  -32768  -32768     69     67     70     69
+ 13     --     --  -32768  -32768  -32768  -32768     68     66     70     68
+ 14     --     --  -32768  -32768  -32768  -32768     69     67     71     69
+ 15     --     --  -32768  -32768  -32768  -32768     70     67     70     69
+ 16     --     --  -32768  -32768  -32768  -32768     69     67     71     69
+ 17     --     --  -32768  -32768  -32768  -32768     69     67     70     70
+ 18     --     --  -32768  -32768  -32768  -32768     70     67     71     69
+ 19     --     --  -32768  -32768  -32768  -32768     69     67     71     69
+ 20     --     --  -32768  -32768  -32768  -32768     69     67     71     70
+ 21     --     --  -32768  -32768  -32768  -32768     68     67     72     69
+ 22     --     --  -32768  -32768  -32768  -32768     68     67     71     69
+ 23     --     --  -32768  -32768  -32768  -32768     69     67     70     69
+ 24     --     --  -32768  -32768  -32768  -32768     69     67     71     69
+ 25     --     --  -32768  -32768  -32768  -32768     69     67     70     69
+ 26     --     --  -32768  -32768  -32768  -32768     68     66     71     69
+ 27     --     --  -32768  -32768  -32768  -32768     69     68     72     69
+ 28     --     --  -32768  -32768  -32768  -32768     69     66     71     69
+ 29     --     --  -32768  -32768  -32768  -32768     68     68     71     69
+ 30     --     --  -32768  -32768  -32768  -32768     69     67     72     69""")
+        ser.cmd_and_reply(adcp,adcp_log, "pwroff")
+
+        # Wait a few seconds, then wake up the buoy...
+        time.sleep(5)
+
+        ser.cmd_and_reply(buoy, buoy_log, "pwron")
+
+        # Contact the adcp over inductive line, get sample...
+        ser.cmd_and_reply(buoy, buoy_log, "fcl")
+        ser.cmd_and_reply(buoy, buoy_log, "sendwakeuptone")
+        ser.cmd_and_reply(buoy, buoy_log, ("!%sgethd" % iid))
+        ser.cmd_and_reply(buoy, buoy_log, ("!%samplegetsummary" % iid))
+        ser.cmd_and_reply(buoy, buoy_log, ("!%samplegetlast" % iid))
+        ser.cmd_and_reply(buoy, buoy_log, ("!%sampleeraseall" % iid))
+        ser.cmd_and_reply(buoy, buoy_log, "pwroff")
     #
     #
     #
