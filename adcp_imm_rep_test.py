@@ -7,18 +7,19 @@ def run_test(buoy_port, adcp_port):
 
     #Establish contact with virtual adcp...
     adcp_log = open(("adcp-%s.log" % datetime.today().strftime("%Y%m%d")), "wb")
-    adcp = ser.open_port(adcp_port, 9600)
+    adcp = ser.open_port(adcp_port, 9600, 3)
     if not adcp:
         return "Error! Unable to connect to ADCP."
 
     # Establish contact with virtual buoy...
     buoy_log = open(("buoy-%s.log" % datetime.today().strftime("%Y%m%d")), "wb")
-    buoy = ser.open_port(buoy_port, 9600)
+    buoy = ser.open_port(buoy_port, 9600, 3)
     if not buoy:
         return "Error! Unable to connect to Buoy."
 
     # Talk to the adcp for a bit...
     print("Identifying the ADCP...")
+    ser.cmd_and_reply(adcp, adcp_log, "pwron")
     ser.cmd_and_reply(adcp, adcp_log, "gethd")
     ser.cmd_and_reply(adcp, adcp_log, "getcd")
 
@@ -31,6 +32,7 @@ def run_test(buoy_port, adcp_port):
     while test_in_progress:
         ser.cmd_and_reply(adcp,adcp_log, "pwron")
         # Example ADCP data sample...
+        print("Making a sample now...")
         ser.cmd_and_reply(adcp,adcp_log, "sampleadd")
         ser.cmd_and_reply(adcp,adcp_log, """2016/01/29 21:26:12.97 00001
 Hdg: 352.3 Pitch: -1.2 Roll: -3.1
@@ -67,20 +69,23 @@ Bin    Dir    Mag     E/W     N/S    Vert     Err   Echo1  Echo2  Echo3  Echo4
  29     --     --  -32768  -32768  -32768  -32768     68     68     71     69
  30     --     --  -32768  -32768  -32768  -32768     69     67     72     69""")
         ser.cmd_and_reply(adcp,adcp_log, "pwroff")
-
+        print("Sampling complete, back to sleep...")
         # Wait a few seconds, then wake up the buoy...
         time.sleep(5)
 
         ser.cmd_and_reply(buoy, buoy_log, "pwron")
-
+        print("Begin buoy communication...")
         # Contact the adcp over inductive line, get sample...
         ser.cmd_and_reply(buoy, buoy_log, "fcl")
+        print("Capturing inductive line...")
         ser.cmd_and_reply(buoy, buoy_log, "sendwakeuptone")
         ser.cmd_and_reply(buoy, buoy_log, ("!%sgethd" % iid))
-        ser.cmd_and_reply(buoy, buoy_log, ("!%samplegetsummary" % iid))
-        ser.cmd_and_reply(buoy, buoy_log, ("!%samplegetlast" % iid))
-        ser.cmd_and_reply(buoy, buoy_log, ("!%sampleeraseall" % iid))
+        ser.cmd_and_reply(buoy, buoy_log, ("!%ssamplegetsummary" % iid))
+        print("Requesting sample from ADCP...")
+        ser.cmd_and_reply(buoy, buoy_log, ("!%ssamplegetlast" % iid))
+        ser.cmd_and_reply(buoy, buoy_log, ("!%ssampleeraseall" % iid))
         ser.cmd_and_reply(buoy, buoy_log, "pwroff")
+        print("Powering off...")
     #
     #
     #

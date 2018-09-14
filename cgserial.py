@@ -42,14 +42,15 @@ def select_port_win():
             print("Whoa! That's not an available port.")
 
 
-def open_port(port, baudrate):
+def open_port(port, baudrate, t):
     """Function to open a serial connection."""
     print("Connecting to %s at %d baud..." % (port, baudrate))
     try:
-        conn = serial.Serial(port, baudrate, timeout=5)
+        conn = serial.Serial(port, baudrate, timeout=t)
         print("Connected to %s." % port)
         return conn
-    except:
+    except Exception as exc:
+        print(("Oops! Something happened: %s" % exc))
         return None
 
 def cmd_and_reply(conn, capfile, cmd):
