@@ -28,7 +28,7 @@ class SAMIRecord:
             PHSENRecord.__init__(self, hexstring[16:])
 
         if self.hexrectype == "04":
-            PCO2WRecord.__init__(self, hexstring[16:])
+            PCO2WRecord.__init__(self)
 
     def telltime(self):
         """Return human-readable timestamp for this record"""
