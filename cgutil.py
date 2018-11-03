@@ -27,3 +27,22 @@ def prompt_integer(user_prompt, bounds=None):
             continue
         break
     return user_response
+
+def dlog_scrub_logfile_asc(infile):
+    """
+    Takes a dcl ascii data log file and removes timestamp and other
+    messages added by the datalogger, hopefully leaving only instrument
+    output. Saves to a new file.
+    """
+    newlines = []
+    with open(infile, "r") as lines:
+        for line in lines:
+            line = line[24:]
+            if line.startswith("["):
+                continue            
+            newlines.append(line)
+
+    outfile = "%s_asc.txt" % infile[:-4]
+    with open(outfile, "w") as newfile:
+        for line in newlines:
+            newfile.write(line)
