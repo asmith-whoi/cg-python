@@ -32,7 +32,7 @@ def dlog_scrub_logfile_asc(infile):
     """
     Takes a dcl ascii data log file and removes timestamp and other
     messages added by the datalogger, hopefully leaving only instrument
-    output. Saves to a new file.
+    output. Returns a list of lines.
     """
     newlines = []
     with open(infile, "r") as lines:
@@ -41,7 +41,11 @@ def dlog_scrub_logfile_asc(infile):
             if line.startswith("["):
                 continue            
             newlines.append(line)
-
+        return newlines
+    
+def write_scrubbed_logfile(infile):
+    newlines = dlog_scrub_logfile_asc(infile)
+    
     outfile = "%s_asc.txt" % infile[:-4]
     with open(outfile, "w") as newfile:
         for line in newlines:
