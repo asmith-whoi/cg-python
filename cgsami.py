@@ -25,7 +25,7 @@ class SAMIRecord:
         self.rectype = SAMIRecord.rectypes.get(self.hexrectype)
 
         if self.hexrectype == "0A":
-            PHSENRecord.__init__(self, hexstring[16:])
+            PHSENRecord.__init__(self, hexstring[15:])
 
         if self.hexrectype == "04":
             PCO2WRecord.__init__(self)
@@ -51,6 +51,8 @@ class PHSENRecord:
 
     def __init__(self, hexstring):
         self.name = "The PHSEN known as %s" % self.sami
+        self.batt = int(hexstring[440:444], 16) / 4096 *15
+        self.temp2 = int(hexstring[444:448], 16)
 
 class PCO2WRecord:
     """A PCO2W data record, not a blank"""
