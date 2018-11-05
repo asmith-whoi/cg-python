@@ -37,7 +37,7 @@ def dlog_scrub_logfile_asc(infile):
     newlines = []
     with open(infile, "r") as lines:
         for line in lines:
-            line = line[24:]
+            line = line[24:].strip()
             if line.startswith("["):
                 continue            
             newlines.append(line)
