@@ -1,5 +1,5 @@
 import cgutil
-import cgsami
+from cgsami import SAMIRecord
 
 def load_log_file(infile):
     lines = cgutil.dlog_scrub_logfile_asc(infile)
@@ -23,3 +23,10 @@ def load_log_file(infile):
             i = i + 1
 
     return phsamples
+
+def load_phsamples(samples):
+    phrecords = []
+    for sample in samples:
+        phrecord = SAMIRecord(sample)
+        phrecords.append(phrecord)
+    return phrecords
