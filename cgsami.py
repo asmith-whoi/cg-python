@@ -46,14 +46,34 @@ class SAMIRecord:
             result = True
         return result
 
-class PHSENRecord:
+class PHSENRecord(SAMIRecord):
     """A PHSEN data record"""
 
     def __init__(self, hexstring):
         self.name = "The PHSEN known as %s" % self.sami
         self.batt = int(hexstring[440:444], 16) / 4096 *15
+        self.temp1 = int(hexstring[:4], 16)
         self.temp2 = int(hexstring[444:448], 16)
 
+    def proc_temp(self):
+        """Process temperature data to output mean T(deg C)"""
+        Rt1 = (self.temp1 / (4096 - self.temp1)) * 17400
+        invT1 = 0.0010183 + 0.000241 * (math.log(Rt1)) + 0.00000015 * (math.log(Rt1))^3
+        tempK1 = 1 / invT1
+        tempC1 = tempK1 - 273.15
+        tempF1 = 1.8 * tempC1 +32
+        tempFinal1 = tempC1
+
+        Rt2 = (self.temp2 / (4096 - self.temp2)) * 17400
+        invT2 = 0.0010183 + 0.000241 * (math.log(Rt2)) + 0.00000015 * (math.log(Rt2))^3
+        tempK2 = 1 / invT2
+        tempC2 = tempK2 - 273.15
+        tempF2 = 1.8 * tempC2 +32
+        tempFinal2 = tempC2
+
+        temp = (tempFinal1 + tempFinal2) /2
+        return temp
+        
 class PCO2WRecord:
     """A PCO2W data record, not a blank"""
 
