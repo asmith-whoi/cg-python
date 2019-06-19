@@ -1,0 +1,6 @@
+*.~
+*.csv
+*.pyc
+*.txt
+*.xml
+*.log
