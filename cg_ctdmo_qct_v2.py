@@ -99,11 +99,11 @@ def ser_coms(ser, capfile, cmd):
         str: the received message.
     """
     ser.reset_input_buffer()
-    ser.write(cmd.encode('ascii')+'\r\n')
-    cap = ser.read(ser.in_waiting)
+    ser.write((cmd + '\r\n').encode('ascii'))
+    cap = ser.read(ser.in_waiting).decode('ascii')
     while True:
         prev = cap
-        cap += ser.read(1)
+        cap += ser.read(1).decode('ascii')
         if prev == cap:
             capfile.write(cap)
             return cap
@@ -243,10 +243,10 @@ def ctdmo_qct_test(port, username, formnumber):
 
     # ---- Set up results document ----
     # Make a list for test results at each step...
-    step_results_p = [False for _ in xrange(10)]
+    step_results_p = [False for _ in range(10)]
 
     # Make a default list for 'Test Data' column entries...
-    testdata = [None for _ in xrange(10)]
+    testdata = [None for _ in range(10)]
 
     # The first step is already complete...
     step_results_p[0] = True
@@ -568,7 +568,7 @@ def ctdmo_qct_test(port, username, formnumber):
 
     # ---- Wrap up the results document ----
     # Populate the Pass and Fail columns...
-    for i in xrange(10):
+    for i in range(10):
         if step_results_p[i]:
             # True case: PASS
             table.columns[4].cells[i+2].text = testdata[i]
